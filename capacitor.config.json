@@ -1,0 +1,14 @@
+{
+  "appId": "com.mck.hvlplayer",
+  "appName": "HVL Player",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  },
+  "ios": {
+    "contentInset": "always",
+    "allowsLinkPreview": false,
+    "scrollEnabled": true
+  }
+}

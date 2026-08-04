@@ -1,0 +1,9 @@
+node_modules/
+dist/
+Payload/
+*.zip
+*.ipa
+*.flac
+public/audio/
+.DS_Store
+

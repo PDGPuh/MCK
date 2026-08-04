@@ -1,0 +1,33 @@
+
+:root{font-family:Inter,system-ui,sans-serif;color:#F2F0EA;background:#050607}
+*{box-sizing:border-box}body{margin:0;background:#000}button{font:inherit;color:inherit}
+.app-shell{position:relative;width:min(100%,430px);min-height:100dvh;margin:auto;overflow:hidden;background:#050607;color:#F2F0EA}
+.screen{position:relative;z-index:2;min-height:100dvh;padding:26px 20px 112px}
+.top-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.wordmark{margin:0;font-family:"Cormorant Garamond",Georgia,serif;font-size:52px;line-height:.95;letter-spacing:.02em}
+.header-actions{display:flex;gap:10px;align-items:center}.avatar,.icon-button{width:44px;height:44px;border-radius:50%}
+.avatar{object-fit:cover;border:1px solid rgba(255,255,255,.2)}.icon-button{position:relative;border:1px solid rgba(255,255,255,.14);background:#0D1013}
+.icon-button i{position:absolute;width:7px;height:7px;border-radius:50%;background:#C8B79F;right:2px;top:4px}
+.mood-chip{display:inline-flex;border:1px solid rgba(255,255,255,.13);border-radius:999px;padding:7px 12px;color:#969AA0;margin-bottom:16px}
+.hero{position:relative;overflow:hidden;border-radius:22px;border:1px solid rgba(255,255,255,.15);box-shadow:0 16px 40px rgba(0,0,0,.42)}
+.hero>img{width:100%;height:100%;object-fit:cover}.home-hero{height:280px}.search-hero{height:225px}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.82),rgba(0,0,0,.08)),linear-gradient(0deg,rgba(0,0,0,.5),transparent)}
+.hero-copy{position:absolute;left:20px;bottom:20px}.hero-copy h2{font-family:"Cormorant Garamond",Georgia,serif;font-size:50px;line-height:.82;margin:0 0 8px}.hero-copy p{color:#a6a7aa;margin:0 0 16px}
+.primary,.round{border:1px solid rgba(255,255,255,.16);background:rgba(242,240,234,.09);backdrop-filter:blur(18px)}
+.primary{padding:14px 23px;border-radius:999px;font-weight:700}.round{width:48px;height:48px;border-radius:50%;margin-left:10px}
+.section-title{display:flex;align-items:center;justify-content:space-between;margin:24px 0 12px}.section-title h3{margin:0;font-family:"Cormorant Garamond",Georgia,serif;font-size:28px}.section-title span{color:#aaa}
+.track-list{display:grid;gap:9px}.track-row{width:100%;display:flex;align-items:center;gap:13px;padding:8px 12px;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:#0a0c0e;text-align:left}
+.track-row img{width:54px;height:54px;object-fit:cover;border-radius:8px}.track-copy{display:grid;gap:4px;flex:1}.track-copy strong{font-size:17px}.track-copy small{color:#8c9095}.track-copy em,.player-title em{font-style:normal;font-size:10px;background:#676D74;padding:2px 4px;border-radius:3px}.row-actions{color:#ddd}
+.bottom-nav{position:fixed;z-index:5;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,430px);height:88px;padding:8px 14px max(10px,env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(4,1fr);background:rgba(12,14,16,.94);border-top:1px solid rgba(255,255,255,.14);backdrop-filter:blur(22px)}
+.bottom-nav button{border:0;background:transparent;color:#767b81;display:grid;place-items:center;gap:2px}.bottom-nav button span{font-size:28px}.bottom-nav button.active{color:#F2F0EA;background:rgba(255,255,255,.05);border-radius:999px}
+.search-field{display:flex;justify-content:space-between;border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:14px 18px;color:#868b91;margin:20px 0 14px}
+.chips{display:flex;gap:8px;overflow-x:auto;margin-bottom:16px}.chips button{white-space:nowrap;background:transparent;border:1px solid rgba(255,255,255,.13);border-radius:999px;padding:8px 15px;color:#8d9196}.chips button.selected{border-color:#B9C6D8;color:#F2F0EA}
+.horizontal-cards{display:flex;gap:12px;overflow-x:auto}.horizontal-cards article{min-width:145px}.horizontal-cards img{width:145px;height:145px;object-fit:cover;border-radius:14px;border:1px solid rgba(255,255,255,.13)}.horizontal-cards strong,.horizontal-cards small{display:block;margin-top:6px}.horizontal-cards small{color:#858a90}
+.artists{display:flex;gap:14px;overflow-x:auto}.artists div{min-width:64px;text-align:center}.artists span{display:grid;place-items:center;width:62px;height:62px;border-radius:50%;background:#0D1013;border:1px solid rgba(255,255,255,.14);font-family:Georgia,serif;font-size:22px}.artists small{display:block;margin-top:7px}
+.collection{display:grid;grid-template-columns:38% 1fr;overflow:hidden;border-radius:18px;border:1px solid rgba(255,255,255,.14);background:#0B0D0F}.collection>img{width:100%;height:100%;object-fit:cover}.collection>div{padding:18px}.collection h2{margin:0;font-family:Georgia,serif}.collection p{font-size:13px;color:#999}.stats{display:flex;justify-content:space-between;gap:8px}.stats b{font-size:18px}.stats small{display:block;font-size:10px;color:#888;font-weight:400}
+.player-screen{padding-bottom:32px}.player-header{display:flex;align-items:center;justify-content:space-between;text-align:center}.player-header button{border:0;background:transparent;font-size:28px}.player-header small{letter-spacing:.36em;color:#777}.player-header h1{font-family:Georgia,serif;font-size:48px;margin:2px}
+.player-art{width:100%;aspect-ratio:1;object-fit:cover;border-radius:20px;border:1px solid rgba(255,255,255,.15);margin-top:18px}.player-title{display:flex;justify-content:space-between;align-items:center}.player-title h2{margin:20px 0 3px;font-size:30px}.player-title p{margin:0;color:#888}.player-title button{font-size:38px;border:0;background:transparent}
+.progress{width:100%;margin-top:22px;accent-color:#B9C6D8}.times{display:flex;justify-content:space-between;color:#777}.controls{display:flex;align-items:center;justify-content:space-between;margin:18px 0}.controls button{border:0;background:transparent;font-size:28px}.controls .big{width:78px;height:78px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:#111417}
+.info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.info-grid>div{min-height:126px;border:1px solid rgba(255,255,255,.13);border-radius:14px;padding:13px;background:#0A0C0E}.info-grid b{font-size:12px;color:#aaa}.info-grid p{font-size:13px}.info-grid small{color:#72809a}
+.grain,.vignette{position:absolute;z-index:10;inset:0;pointer-events:none;background-size:cover}.grain{background-image:url('/assets/texture_grain_overlay.png');opacity:.1;mix-blend-mode:screen}.vignette{background-image:url('/assets/texture_vignette_overlay.png');opacity:.15}
+@media (max-width:380px){.wordmark{font-size:44px}.screen{padding-left:16px;padding-right:16px}.home-hero{height:255px}}
