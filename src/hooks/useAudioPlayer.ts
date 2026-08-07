@@ -23,19 +23,43 @@ export function useAudioPlayer() {
     updateDuration,
     setPlayingState,
     nextTrack,
+    previousTrack,
     registerSeekHandler,
     registerSetSinkIdHandler,
   } = usePlayer();
 
-  // Initialize Audio element and Web Audio API Equalizer chain
+  // Initialize DOM Audio element event listeners
   useEffect(() => {
-    const audio = new Audio();
-    audio.crossOrigin = "anonymous";
-    audioRef.current = audio;
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    audio.removeAttribute("crossorigin");
+    audio.setAttribute("playsinline", "true");
+    audio.setAttribute("webkit-playsinline", "true");
+    audio.preload = "auto";
 
     const handleTimeUpdate = () => {
       if (audioRef.current) {
-        updateCurrentTime(audioRef.current.currentTime);
+        const cur = audioRef.current.currentTime;
+        updateCurrentTime(cur);
+
+        // Sync MediaSession position state for iOS Lock Screen & Background playback
+        if (
+          "mediaSession" in navigator &&
+          typeof navigator.mediaSession.setPositionState === "function" &&
+          audioRef.current.duration &&
+          !isNaN(audioRef.current.duration)
+        ) {
+          try {
+            navigator.mediaSession.setPositionState({
+              duration: audioRef.current.duration,
+              playbackRate: audioRef.current.playbackRate || 1,
+              position: Math.min(cur, audioRef.current.duration),
+            });
+          } catch (e) {
+            // Ignore edge errors
+          }
+        }
       }
     };
 
@@ -70,13 +94,12 @@ export function useAudioPlayer() {
       audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
       audio.removeEventListener("ended", handleEnded);
       audio.removeEventListener("error", handleError);
-      audio.pause();
     };
   }, []);
 
-  // Setup Web Audio API Nodes once user interacts
+  // Setup Web Audio API Nodes once user enables Equalizer
   const initWebAudio = () => {
-    if (audioCtxRef.current || !audioRef.current) return;
+    if (audioCtxRef.current || !audioRef.current || !isEqEnabled) return;
 
     try {
       const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
@@ -149,35 +172,28 @@ export function useAudioPlayer() {
     });
   }, [eqBands, isEqEnabled]);
 
-  // Update src when currentTrack changes
+  // Sync track src and play/pause state
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || !currentTrack) return;
 
-    if (audio.src !== window.location.origin + currentTrack.audioSrc) {
-      audio.src = currentTrack.audioSrc;
-      if (isPlaying) {
-        initWebAudio();
-        if (audioCtxRef.current && audioCtxRef.current.state === "suspended") {
-          audioCtxRef.current.resume();
-        }
-        audio.play().catch((err) => {
-          console.warn("Playback interrupted by policy:", err);
-          setPlayingState(false);
-        });
+    try {
+      const expectedSrc = new URL(currentTrack.audioSrc, window.location.origin).href;
+      if (audio.src !== expectedSrc) {
+        audio.src = currentTrack.audioSrc;
+        audio.load();
+      }
+    } catch (e) {
+      if (audio.src !== currentTrack.audioSrc) {
+        audio.src = currentTrack.audioSrc;
+        audio.load();
       }
     }
-  }, [currentTrack]);
-
-  // Sync play/pause state
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio || !currentTrack) return;
 
     if (isPlaying) {
       initWebAudio();
       if (audioCtxRef.current && audioCtxRef.current.state === "suspended") {
-        audioCtxRef.current.resume();
+        audioCtxRef.current.resume().catch(() => {});
       }
       audio.play().catch((err) => {
         console.warn("Play request failed:", err);
@@ -185,8 +201,40 @@ export function useAudioPlayer() {
       });
     } else {
       audio.pause();
+      if (audioCtxRef.current && audioCtxRef.current.state === "running") {
+        audioCtxRef.current.suspend().catch(() => {});
+      }
     }
-  }, [isPlaying]);
+  }, [currentTrack, isPlaying]);
+
+  // Media Session API for iOS Safari / Chrome Lock Screen & Background playback
+  useEffect(() => {
+    if (!currentTrack || typeof window === "undefined" || !("mediaSession" in navigator)) return;
+
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: currentTrack.title,
+      artist: currentTrack.artist,
+      album: currentTrack.collection || "HVL Album",
+      artwork: [
+        { src: window.location.origin + currentTrack.cover, sizes: "512x512", type: "image/jpeg" },
+      ],
+    });
+
+    try {
+      navigator.mediaSession.setActionHandler("play", () => setPlayingState(true));
+      navigator.mediaSession.setActionHandler("pause", () => setPlayingState(false));
+      navigator.mediaSession.setActionHandler("previoustrack", () => previousTrack());
+      navigator.mediaSession.setActionHandler("nexttrack", () => nextTrack());
+      navigator.mediaSession.setActionHandler("seekto", (details) => {
+        if (details.seekTime !== undefined && audioRef.current) {
+          audioRef.current.currentTime = details.seekTime;
+          updateCurrentTime(details.seekTime);
+        }
+      });
+    } catch (e) {
+      console.warn("MediaSession action handler note:", e);
+    }
+  }, [currentTrack, setPlayingState, nextTrack, previousTrack, updateCurrentTime]);
 
   // Sync volume and mute
   useEffect(() => {

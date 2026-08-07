@@ -1,9 +1,7 @@
 node_modules/
 dist/
+dist-electron/
+release/
 Payload/
 *.zip
-*.ipa
-*.flac
-public/audio/
 .DS_Store
-

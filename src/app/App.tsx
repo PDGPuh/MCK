@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BrowserRouter, useLocation } from "react-router-dom";
+import { HashRouter, useLocation } from "react-router-dom";
 import { PlayerProvider } from "../store/playerContext";
 import { useAudioPlayer } from "../hooks/useAudioPlayer";
 import { Header } from "../components/app-shell/Header";
@@ -11,7 +11,7 @@ import { VignetteOverlay } from "../components/app-shell/VignetteOverlay";
 import { AppRouter } from "./router";
 
 const AppContent: React.FC = () => {
-  useAudioPlayer(); // Activate HTML5 audio element lifecycle
+  const { audioRef } = useAudioPlayer(); // Activate HTML5 audio element lifecycle
   const location = useLocation();
   const [isMoreOpen, setIsMoreOpen] = useState(false);
 
@@ -19,6 +19,16 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="relative min-h-dvh max-w-[430px] mx-auto bg-[#050607] text-[#f2f0ea] shadow-[0_0_80px_rgba(0,0,0,0.9)] overflow-hidden border-x border-white/5">
+      {/* Persistent DOM Audio Element for iOS Safari & Mobile Background Playback */}
+      <audio
+        ref={audioRef}
+        playsInline
+        // @ts-ignore
+        webkit-playsinline="true"
+        crossOrigin="anonymous"
+        preload="auto"
+        style={{ display: "none" }}
+      />
       {/* Texture Overlays */}
       <GrainOverlay />
       <VignetteOverlay />
@@ -48,9 +58,9 @@ const AppContent: React.FC = () => {
 export const App: React.FC = () => {
   return (
     <PlayerProvider>
-      <BrowserRouter>
+      <HashRouter>
         <AppContent />
-      </BrowserRouter>
+      </HashRouter>
     </PlayerProvider>
   );
 };
