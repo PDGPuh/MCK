@@ -33,7 +33,6 @@ export function useAudioPlayer() {
     const audio = audioRef.current;
     if (!audio) return;
 
-    audio.removeAttribute("crossorigin");
     audio.setAttribute("playsinline", "true");
     audio.setAttribute("webkit-playsinline", "true");
     audio.preload = "auto";
@@ -173,6 +172,10 @@ export function useAudioPlayer() {
   }, [eqBands, isEqEnabled]);
 
   // Sync track src and play/pause state
+  // CRITICAL: Do NOT route audio through AudioContext here.
+  // iOS Safari suspends AudioContext when app goes to background,
+  // which kills audio playback. Keep <audio> element on the native
+  // HTML5 pipeline so iOS mediaserverd can continue playback.
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || !currentTrack) return;
@@ -191,21 +194,49 @@ export function useAudioPlayer() {
     }
 
     if (isPlaying) {
-      initWebAudio();
-      if (audioCtxRef.current && audioCtxRef.current.state === "suspended") {
-        audioCtxRef.current.resume().catch(() => {});
-      }
       audio.play().catch((err) => {
         console.warn("Play request failed:", err);
         setPlayingState(false);
       });
     } else {
       audio.pause();
-      if (audioCtxRef.current && audioCtxRef.current.state === "running") {
+    }
+  }, [currentTrack, isPlaying]);
+
+  // Initialize EQ AudioContext ONLY when user explicitly enables EQ
+  // This is separated from play/pause to avoid connecting audio element
+  // to AudioContext by default (which breaks iOS background playback)
+  useEffect(() => {
+    if (isEqEnabled && !audioCtxRef.current && audioRef.current) {
+      initWebAudio();
+    }
+    if (audioCtxRef.current) {
+      if (isEqEnabled && audioCtxRef.current.state === "suspended") {
+        audioCtxRef.current.resume().catch(() => {});
+      } else if (!isEqEnabled && audioCtxRef.current.state === "running") {
         audioCtxRef.current.suspend().catch(() => {});
       }
     }
-  }, [currentTrack, isPlaying]);
+  }, [isEqEnabled]);
+
+  // iOS Safari recovery: when user returns to the app after backgrounding,
+  // resume playback if it was supposed to be playing
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible" && audioRef.current && isPlaying) {
+        // Re-trigger play on return to foreground in case iOS paused it
+        if (audioRef.current.paused) {
+          audioRef.current.play().catch(() => {});
+        }
+        // Resume AudioContext if EQ is active
+        if (audioCtxRef.current && audioCtxRef.current.state === "suspended") {
+          audioCtxRef.current.resume().catch(() => {});
+        }
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, [isPlaying]);
 
   // Media Session API for iOS Safari / Chrome Lock Screen & Background playback
   useEffect(() => {

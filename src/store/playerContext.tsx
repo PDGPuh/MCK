@@ -72,9 +72,9 @@ const initialState: ExtendedPlayerState = {
   isShuffle: false,
   likedTrackIds: ["track-01", "track-06"],
   recentlyPlayedIds: ["track-01", "track-02", "track-03"],
-  eqBands: EQ_PRESETS["Hip-Hop (MCK)"],
-  eqPreset: "Hip-Hop (MCK)",
-  isEqEnabled: true,
+  eqBands: EQ_PRESETS.Flat,
+  eqPreset: "Flat",
+  isEqEnabled: false,
   activeDeviceId: "default",
   activeDeviceName: "System Default Speakers",
 };

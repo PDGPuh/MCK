@@ -26,7 +26,6 @@ const AppContent: React.FC = () => {
         playsInline
         // @ts-ignore
         webkit-playsinline="true"
-        crossOrigin="anonymous"
         preload="auto"
         style={{ display: "none" }}
       />
