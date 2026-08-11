@@ -8,3 +8,12 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <App />
   </React.StrictMode>
 );
+
+// Register PWA Service Worker for iOS Safari Background Audio Execution
+if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch((err) => {
+      console.warn('SW registration note:', err);
+    });
+  });
+}
